@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - dev       # Deploy to dev environment
-      - staging   # Deploy to staging environment
+      - staging 
       - main
 
 jobs:
