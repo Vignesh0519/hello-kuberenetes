@@ -3,9 +3,7 @@ name: Deploy to AWS EKS
 on:
   push:
     branches:
-      - main
-      - dev
-      - staging
+      - '*'
 
 jobs:
   build-and-deploy:
@@ -43,7 +41,7 @@ jobs:
     
     - name: Set up kubectl to access EKS
       run: |
-        aws eks --region us-east-1 update-kubeconfig --name your-cluster-name
+        aws eks --region us-east-1 update-kubeconfig --name hello-kubernetes-cluster
 
     - name: Update Kubernetes Deployment
       run: |
