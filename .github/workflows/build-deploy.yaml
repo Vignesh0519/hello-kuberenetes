@@ -22,7 +22,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Create ECR Repository (if it doesn't exist)
+    - name: Create ECR Repository
       run: |
         aws ecr describe-repositories --repository-names hello-kubernetes || \
         aws ecr create-repository --repository-name hello-kubernetes --region us-east-1
