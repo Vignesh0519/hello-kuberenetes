@@ -28,11 +28,11 @@ jobs:
     - name: Build Docker Image
       run: |
         docker build -t hello-kubernetes .
-        docker tag hello-kubernetes:latest 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes:latest
+        docker tag hello-kubernetes:latest 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:latest
 
     - name: Push Docker Image to Amazon ECR
       run: |
-        docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes:latest
+        docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:latest
 
     - name: Update Kubernetes Deployment
       run: |
