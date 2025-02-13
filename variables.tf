@@ -38,7 +38,7 @@ variable "vpc_id" {
 variable "ecr_repository_name" {
   description = "The name of the ECR repository"
   type        = string
-  default     = "Hello-kubernetes"
+  default     = "hello-kubernetes-repo"
 }
 
 variable "image_tag_mutability" {
