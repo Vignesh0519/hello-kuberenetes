@@ -38,7 +38,6 @@ jobs:
       run: |
         aws eks --region us-east-1 update-kubeconfig --name kube-cluster
       
-    
     - name: Update Kubernetes Deployment
       run: |
         kubectl apply -f deployment.yaml
