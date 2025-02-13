@@ -40,6 +40,10 @@ jobs:
     - name: Push Docker Image to Amazon ECR
       run: |
         docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes:latest
+    
+    - name: Set up kubectl to access EKS
+      run: |
+        aws eks --region us-east-1 update-kubeconfig --name your-cluster-name
 
     - name: Update Kubernetes Deployment
       run: |
