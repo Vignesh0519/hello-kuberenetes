@@ -3,7 +3,7 @@
 resource "aws_security_group" "eks_security_group" {
   name        = "eks-security-group"
   description = "Security group for EKS cluster"
-  vpc_id      = aws_vpc.my-vpc.id
+  vpc_id      = aws_vpc.my-eks-vpc.id
 }
 
 resource "aws_security_group_rule" "allow_eks_ingress" {
