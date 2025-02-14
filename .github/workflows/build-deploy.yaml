@@ -82,7 +82,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
