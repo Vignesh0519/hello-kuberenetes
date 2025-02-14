@@ -3,7 +3,7 @@ name: Deploy to AWS EKS
 on:
   push:
     branches:
-      - dev       # Deploy to dev environment
+      - dev
       - staging 
       - main
 
@@ -40,16 +40,13 @@ jobs:
         
     - name: Set up kubectl for EKS
       run: |
-        # Dynamically set the cluster name based on the branch
-        CLUSTER_NAME="${{ github.ref_name == 'main' && 'main-cluster' || (github.ref_name == 'staging' && 'staging-cluster' || 'dev-cluster') }}"
-        
-        # Update kubeconfig and ensure the correct cluster context is used
+        CLUSTER_NAME="my-eks-cluster"
         aws eks --region us-east-1 update-kubeconfig --name $CLUSTER_NAME
-        kubectl config use-context arn:aws:eks:us-east-1:195275643268:cluster/$CLUSTER_NAME # Use the dynamic context
+        kubectl config use-context arn:aws:eks:us-east-1:195275643268:cluster/$CLUSTER_NAME
 
     - name: Deploy to Kubernetes
       env:
-        ENVIRONMENT: ${{ github.ref_name }} # Get branch name
+        ENVIRONMENT: ${{ github.ref_name }}
       run: |
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
