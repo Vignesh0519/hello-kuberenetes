@@ -1,98 +1,37 @@
-# name: Deploy to AWS EKS
-
-# on:
-#   push:
-#     branches:
-#       - dev
-#       - staging 
-#       - main
-
-#   pull_request:
-#     branches:
-#       - dev
-#       - staging 
-#       - main
-
-# jobs:
-#   build-and-deploy:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - name: Checkout Code
-#       uses: actions/checkout@v3
-
-#     - name: Configure AWS Credentials
-#       uses: aws-actions/configure-aws-credentials@v2
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: us-east-1
-
-#     - name: Login to Amazon ECR
-#       id: login-ecr
-#       run: |
-#         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 195275643268.dkr.ecr.us-east-1.amazonaws.com
-
-#     - name: Build and Tag Docker Image
-#       run: |
-#         IMAGE_TAG=$(git rev-parse --short HEAD)  # Use commit hash as version
-#         docker build -t hello-kubernetes:$IMAGE_TAG .
-#         docker tag hello-kubernetes:$IMAGE_TAG 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:$IMAGE_TAG
-#         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-
-#     - name: Push Docker Image to Amazon ECR
-#       run: |
-#         docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:${{ env.IMAGE_TAG }}
-        
-#     - name: Set up kubectl for EKS
-#       run: |
-#         CLUSTER_NAME="my-eks-cluster"
-#         aws eks --region us-east-1 update-kubeconfig --name $CLUSTER_NAME
-#         kubectl config use-context arn:aws:eks:us-east-1:195275643268:cluster/$CLUSTER_NAME
-
-#     - name: Deploy to Kubernetes
-#       env:
-#         ENVIRONMENT: ${{ github.ref_name }}
-#       run: |
-#         kubectl apply -f deployment.yaml
-#         kubectl apply -f service.yaml
-#         kubectl rollout restart deployment/hello-kubernetes
-
-#     # - name: Check Deployment Rollout Status
-#     #   run: |
-#     #     kubectl rollout status deployment/hello-kubernetes --timeout=10m
-
-
-
-name: Build and Push Docker Image
+name: Deploy to AWS EKS
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches:
       - dev
-      - staging
+      - staging 
+      - main
+
+  pull_request:
+    branches:
+      - dev
+      - staging 
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
-    - name: Log in to Amazon ECR
-      uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to Amazon ECR
+      id: login-ecr
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 195275643268.dkr.ecr.us-east-1.amazonaws.com
 
     - name: Build and Tag Docker Image
       run: |
@@ -103,17 +42,78 @@ jobs:
 
     - name: Push Docker Image to Amazon ECR
       run: |
-        # docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:${{ env.IMAGE_TAG }}
-        REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
-
-
-    - name: Push Docker image to ECR
+        docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:${{ env.IMAGE_TAG }}
+        
+    - name: Set up kubectl for EKS
       run: |
-        IMAGE_TAG=${{ github.sha }}
-        REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+        CLUSTER_NAME="my-eks-cluster"
+        aws eks --region us-east-1 update-kubeconfig --name $CLUSTER_NAME
+        kubectl config use-context arn:aws:eks:us-east-1:195275643268:cluster/$CLUSTER_NAME
+
+    - name: Deploy to Kubernetes
+      env:
+        ENVIRONMENT: ${{ github.ref_name }}
+      run: |
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
+        kubectl rollout restart deployment/hello-kubernetes
+
+    # - name: Check Deployment Rollout Status
+    #   run: |
+    #     kubectl rollout status deployment/hello-kubernetes --timeout=10m
+
+
+
+# name: Build and Push Docker Image
+
+# on:
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - dev
+#       - staging
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     env:
+#       AWS_REGION: ${{ secrets.AWS_REGION }}
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v1
+
+#     - name: Log in to Amazon ECR
+#       uses: aws-actions/amazon-ecr-login@v1
+
+#     - name: Build and Tag Docker Image
+#       run: |
+#         IMAGE_TAG=$(git rev-parse --short HEAD)  # Use commit hash as version
+#         docker build -t hello-kubernetes:$IMAGE_TAG .
+#         docker tag hello-kubernetes:$IMAGE_TAG 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:$IMAGE_TAG
+#         echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+#     - name: Push Docker Image to Amazon ECR
+#       run: |
+#         # docker push 195275643268.dkr.ecr.us-east-1.amazonaws.com/hello-kubernetes-repo:${{ env.IMAGE_TAG }}
+#         REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+
+
+#     - name: Push Docker image to ECR
+#       run: |
+#         IMAGE_TAG=${{ github.sha }}
+#         REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
         
-        # Debugging output
-        echo "Pushing Docker image to ECR: $REPO_URI:$IMAGE_TAG"
+#         # Debugging output
+#         echo "Pushing Docker image to ECR: $REPO_URI:$IMAGE_TAG"
         
-        # Push the image to ECR
-        docker push $REPO_URI:$IMAGE_TAG
+#         # Push the image to ECR
+#         docker push $REPO_URI:$IMAGE_TAG
