@@ -67,15 +67,13 @@
 name: Build and Push Docker Image
 
 on:
-  push:
+  pull_request:
+    types:
+      - closed
     branches:
       - dev
-      - staging 
+      - staging
       - main
-
-  pull_request:
-    branches:
-      - closed
 
 jobs:
   build:
@@ -99,10 +97,11 @@ jobs:
     - name: Build Docker image
       run: |
         IMAGE_TAG=${{ github.sha }}  # Use commit hash for the image tag
-        docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo:$IMAGE_TAG .
+        REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+        docker build -t $REPO_URI:$IMAGE_TAG .
     
     - name: Push Docker image to ECR
       run: |
         IMAGE_TAG=${{ github.sha }}
-        docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo:$IMAGE_TAG
-
+        REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+        docker push $REPO_URI:$IMAGE_TAG
