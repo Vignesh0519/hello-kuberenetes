@@ -98,12 +98,20 @@ jobs:
       run: |
         IMAGE_TAG=${{ github.sha }}  # Use commit hash for the image tag
         REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+        
+        # Debugging output
         echo "Building Docker image with tag $REPO_URI:$IMAGE_TAG"
+        
+        # Build the image
         docker build -t $REPO_URI:$IMAGE_TAG .
 
     - name: Push Docker image to ECR
       run: |
         IMAGE_TAG=${{ github.sha }}
         REPO_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/hello-kubernetes-repo"
+        
+        # Debugging output
         echo "Pushing Docker image to ECR: $REPO_URI:$IMAGE_TAG"
+        
+        # Push the image to ECR
         docker push $REPO_URI:$IMAGE_TAG
