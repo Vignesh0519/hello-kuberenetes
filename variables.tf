@@ -1,14 +1,14 @@
 # variables.tf
-
-variable "cluster_name" {
-  description = "Name of the EKS Cluster"
-  type        = string
-}
-
 variable "region" {
   description = "The AWS region where the resources will be created."
   type        = string
   default     = "us-east-1"
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS Cluster"
+  type        = string
+  default     = "my-eks-cluster"
 }
 
 variable "cidr_block" {
@@ -17,21 +17,16 @@ variable "cidr_block" {
   default     = "10.0.0.0/16"
 }
 
-variable "public_subnet_1_cidr" {
-  description = "CIDR block for public-subnet-1"
+variable "public_subnet_cidr" {
+  description = "CIDR block for public subnet"
   type        = string
   default     = "10.0.1.0/24"
 }
 
-variable "public_subnet_2_cidr" {
-  description = "CIDR block for public-subnet-2"
+variable "private_subnet_cidr" {
+  description = "CIDR block for private subnet"
   type        = string
   default     = "10.0.2.0/24"
-}
-
-variable "vpc_id" {
-  description = "VPC ID for the cluster"
-  type        = string
 }
 
 #ecr
