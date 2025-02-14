@@ -102,7 +102,7 @@ jobs:
         # Debugging output
         echo "Building Docker image with tag $REPO_URI:$IMAGE_TAG"
         
-        # Build the image
+        # Build the Docker image
         docker build -t $REPO_URI:$IMAGE_TAG .
 
     - name: Push Docker image to ECR
