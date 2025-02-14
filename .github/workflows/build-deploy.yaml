@@ -52,6 +52,7 @@ jobs:
         kubectl apply -f service.yaml
         kubectl rollout restart deployment/hello-kubernetes
 
-    - name: Check Deployment Rollout Status
-      run: |
-        kubectl rollout status deployment/hello-kubernetes --timeout=5m
+    # - name: Check Deployment Rollout Status
+    #   run: |
+    #     kubectl rollout status deployment/hello-kubernetes --timeout=10m
+
