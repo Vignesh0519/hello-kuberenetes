@@ -40,8 +40,13 @@ jobs:
         
     - name: Set up kubectl for EKS
       run: |
-        aws eks --region us-east-1 update-kubeconfig --name kube-cluster
-      
+        # Dynamically set the cluster name based on the branch
+        CLUSTER_NAME="${{ github.ref_name == 'main' && 'main-cluster' || (github.ref_name == 'staging' && 'staging-cluster' || 'dev-cluster') }}"
+        
+        # Update kubeconfig and ensure the correct cluster context is used
+        aws eks --region us-east-1 update-kubeconfig --name $CLUSTER_NAME
+        kubectl config use-context arn:aws:eks:us-east-1:195275643268:cluster/$CLUSTER_NAME # Use the dynamic context
+
     - name: Deploy to Kubernetes
       env:
         ENVIRONMENT: ${{ github.ref_name }} # Get branch name
@@ -49,3 +54,7 @@ jobs:
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
         kubectl rollout restart deployment/hello-kubernetes
+
+    - name: Check Deployment Rollout Status
+      run: |
+        kubectl rollout status deployment/hello-kubernetes --timeout=5m
